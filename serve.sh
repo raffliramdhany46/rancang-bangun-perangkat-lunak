@@ -4,8 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOCROOT="${SCRIPT_DIR}/src"
 ROUTER="${DOCROOT}/dev-router.php"
-HOST="127.0.0.1"
-PORT="8080"
+HOST="localhost"
+PORT="8000"
 
 PHP_BIN="${PHP_BIN:-}"
 
@@ -17,14 +17,13 @@ if [[ -z "${PHP_BIN}" ]] && command -v php.exe >/dev/null 2>&1; then
   PHP_BIN="$(command -v php.exe)"
 fi
 
-# Fallback: ambil php dari environment PowerShell jika script dijalankan via bash dari Windows.
 if [[ -z "${PHP_BIN}" ]] && command -v powershell.exe >/dev/null 2>&1; then
   PHP_BIN="$(powershell.exe -NoProfile -Command '$c = Get-Command php -ErrorAction SilentlyContinue; if ($c) { $c.Source }' | tr -d '\r')"
 fi
 
 if [[ -z "${PHP_BIN}" ]]; then
   echo "Error: php command tidak ditemukan." >&2
-  echo "Jalankan langsung dari PowerShell: php -S 127.0.0.1:8080 -t .\\src .\\src\\dev-router.php" >&2
+  echo "Jalankan langsung dari PowerShell: php -S localhost:8000 -t .\\src .\\src\\dev-router.php" >&2
   exit 1
 fi
 
