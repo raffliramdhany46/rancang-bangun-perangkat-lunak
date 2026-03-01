@@ -3,7 +3,6 @@ setlocal
 
 set "SCRIPT_DIR=%~dp0"
 set "DOCROOT=%SCRIPT_DIR%src"
-set "ROUTER=%DOCROOT%\dev-router.php"
 set "HOST=127.0.0.1"
 set "PORT=8080"
 
@@ -19,11 +18,6 @@ if not exist "%DOCROOT%" (
   exit /b 1
 )
 
-if not exist "%ROUTER%" (
-  echo Error: file router tidak ditemukan: %ROUTER%
-  exit /b 1
-)
-
 echo Menjalankan PHP dev server di http://%HOST%:%PORT%
-php -S %HOST%:%PORT% -t "%DOCROOT%" "%ROUTER%"
+php -S %HOST%:%PORT% -t "%DOCROOT%"
 endlocal
