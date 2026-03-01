@@ -7,8 +7,7 @@ require __DIR__ . '/View/View.php';
 
 use App\View\View;
 
-View::render('home', [
-    'title' => 'Home',
-    'pageHeading' => 'Aplikasi Todo Sederhana',
+View::render('about', [
+    'title' => 'About',
+    'pageHeading' => 'Tentang Tugas Ini',
 ]);
-
