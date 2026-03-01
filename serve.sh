@@ -3,7 +3,6 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOCROOT="${SCRIPT_DIR}/src"
-ROUTER="${DOCROOT}/dev-router.php"
 HOST="127.0.0.1"
 PORT="8080"
 
@@ -24,7 +23,7 @@ fi
 
 if [[ -z "${PHP_BIN}" ]]; then
   echo "Error: php command tidak ditemukan." >&2
-  echo "Jalankan langsung dari PowerShell: php -S 127.0.0.1:8080 -t .\\src .\\src\\dev-router.php" >&2
+  echo "Jalankan langsung dari PowerShell: php -S 127.0.0.1:8080 -t .\\src" >&2
   exit 1
 fi
 
@@ -33,10 +32,5 @@ if [[ ! -d "${DOCROOT}" ]]; then
   exit 1
 fi
 
-if [[ ! -f "${ROUTER}" ]]; then
-  echo "Error: file router tidak ditemukan: ${ROUTER}" >&2
-  exit 1
-fi
-
 echo "Menjalankan PHP dev server di http://${HOST}:${PORT}"
-"${PHP_BIN}" -S "${HOST}:${PORT}" -t "${DOCROOT}" "${ROUTER}"
+"${PHP_BIN}" -S "${HOST}:${PORT}" -t "${DOCROOT}"
