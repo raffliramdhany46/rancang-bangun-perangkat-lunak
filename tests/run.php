@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 require __DIR__ . '/bootstrap.php';
 require __DIR__ . '/TestCase.php';
+require __DIR__ . '/ContainerTest.php';
 require __DIR__ . '/RouterTest.php';
 require __DIR__ . '/TodoServiceTest.php';
 
 $tests = [
+    new ContainerTest(),
     new RouterTest(),
     new TodoServiceTest(),
 ];

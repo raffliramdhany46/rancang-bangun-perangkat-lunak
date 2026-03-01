@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 require __DIR__ . '/bootstrap.php';
 
-use Controller\TodoApiController;
-use Controller\TodoHtmlController;
 use Http\Request;
 use Http\Response;
 use Todo\TodoNotFoundException;
@@ -18,10 +16,13 @@ $config = Config::load(__DIR__ . '/config/app.php');
 $repository = TodoRepositoryFactory::make($config);
 $todoService = new TodoService($repository);
 $view = new View(__DIR__ . '/Views');
-$todoApiController = new TodoApiController($todoService);
-$todoHtmlController = new TodoHtmlController($todoService, $view, $todoApiController);
+
+$container = new Container();
+$container->set(TodoService::class, $todoService);
+$container->set(View::class, $view);
 
 $router = new Router();
+$router->setContainer($container);
 $router->middleware(static function (Request $request, callable $next, array $params): Response {
     return $next($request);
 });

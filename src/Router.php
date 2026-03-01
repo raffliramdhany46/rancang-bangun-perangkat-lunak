@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Http\Request;
 use Http\Response;
+use RuntimeException;
 
 /**
  * Router HTTP sederhana dengan dukungan method, parameter path, dan middleware.
@@ -15,6 +16,13 @@ final class Router
 
     /** @var array<int, callable(Request, callable(Request): Response, array<string, string>): Response> */
     private array $globalMiddleware = [];
+
+    private ?Container $container = null;
+
+    public function setContainer(Container $container): void
+    {
+        $this->container = $container;
+    }
 
     /**
      * Menambahkan middleware global.
@@ -29,7 +37,7 @@ final class Router
      *
      * @param array<int, callable(Request, callable(Request): Response, array<string, string>): Response> $middleware
      */
-    public function get(string $path, callable $handler, array $middleware = []): void
+    public function get(string $path, callable|string|array $handler, array $middleware = []): void
     {
         $this->addRoute('GET', $path, $handler, $middleware);
     }
@@ -39,7 +47,7 @@ final class Router
      *
      * @param array<int, callable(Request, callable(Request): Response, array<string, string>): Response> $middleware
      */
-    public function post(string $path, callable $handler, array $middleware = []): void
+    public function post(string $path, callable|string|array $handler, array $middleware = []): void
     {
         $this->addRoute('POST', $path, $handler, $middleware);
     }
@@ -49,7 +57,7 @@ final class Router
      *
      * @param array<int, callable(Request, callable(Request): Response, array<string, string>): Response> $middleware
      */
-    public function put(string $path, callable $handler, array $middleware = []): void
+    public function put(string $path, callable|string|array $handler, array $middleware = []): void
     {
         $this->addRoute('PUT', $path, $handler, $middleware);
     }
@@ -59,7 +67,7 @@ final class Router
      *
      * @param array<int, callable(Request, callable(Request): Response, array<string, string>): Response> $middleware
      */
-    public function patch(string $path, callable $handler, array $middleware = []): void
+    public function patch(string $path, callable|string|array $handler, array $middleware = []): void
     {
         $this->addRoute('PATCH', $path, $handler, $middleware);
     }
@@ -69,7 +77,7 @@ final class Router
      *
      * @param array<int, callable(Request, callable(Request): Response, array<string, string>): Response> $middleware
      */
-    public function delete(string $path, callable $handler, array $middleware = []): void
+    public function delete(string $path, callable|string|array $handler, array $middleware = []): void
     {
         $this->addRoute('DELETE', $path, $handler, $middleware);
     }
@@ -134,7 +142,7 @@ final class Router
      *
      * @param array<int, callable(Request, callable(Request): Response, array<string, string>): Response> $middleware
      */
-    private function addRoute(string $method, string $path, callable $handler, array $middleware = []): void
+    private function addRoute(string $method, string $path, callable|string|array $handler, array $middleware = []): void
     {
         $normalizedPath = $this->normalizePath($path);
         $compiled = $this->compilePattern($normalizedPath);
@@ -199,10 +207,12 @@ final class Router
      * @param array<string, string> $params
      * @param array<int, callable(Request, callable(Request): Response, array<string, string>): Response> $routeMiddleware
      */
-    private function runRoute(Request $request, array $params, callable $handler, array $routeMiddleware): Response
+    private function runRoute(Request $request, array $params, callable|string|array $handler, array $routeMiddleware): Response
     {
-        $finalHandler = static function (Request $currentRequest) use ($handler, $params): Response {
-            $result = $handler($currentRequest, $params);
+        $resolvedHandler = $this->resolveHandler($handler);
+
+        $finalHandler = static function (Request $currentRequest) use ($resolvedHandler, $params): Response {
+            $result = $resolvedHandler($currentRequest, $params);
 
             if ($result instanceof Response) {
                 return $result;
@@ -223,6 +233,74 @@ final class Router
         }
 
         return $next($request);
+    }
+
+    private function resolveHandler(callable|string|array $handler): callable
+    {
+        if (is_array($handler)) {
+            if (count($handler) !== 2 || !is_string($handler[1])) {
+                throw new RuntimeException('Format handler array tidak valid. Gunakan [Class::class, "method"].');
+            }
+
+            [$target, $method] = $handler;
+
+            if (is_string($target)) {
+                if ($this->container === null) {
+                    throw new RuntimeException('Container belum di-set pada Router.');
+                }
+
+                $controller = $this->container->get($target);
+                $callable = [$controller, $method];
+
+                if (!is_callable($callable)) {
+                    throw new RuntimeException("Handler {$target}@{$method} tidak dapat dipanggil.");
+                }
+
+                return $callable;
+            }
+
+            if (is_object($target)) {
+                $callable = [$target, $method];
+
+                if (!is_callable($callable)) {
+                    $class = $target::class;
+                    throw new RuntimeException("Handler {$class}@{$method} tidak dapat dipanggil.");
+                }
+
+                return $callable;
+            }
+
+            throw new RuntimeException('Target handler array harus class string atau object.');
+        }
+
+        if (is_callable($handler)) {
+            return $handler;
+        }
+
+        [$class, $method] = array_pad(explode('@', $handler, 2), 2, '__invoke');
+        $class = trim($class);
+        $method = trim($method);
+
+        if ($class === '') {
+            throw new RuntimeException('Format handler route tidak valid. Gunakan Class@method.');
+        }
+
+        if ($method === '') {
+            $method = '__invoke';
+        }
+
+        if ($this->container === null) {
+            throw new RuntimeException('Container belum di-set pada Router.');
+        }
+
+        $controller = $this->container->get($class);
+        $callable = [$controller, $method];
+
+        if (!is_callable($callable)) {
+            throw new RuntimeException("Handler {$class}@{$method} tidak dapat dipanggil.");
+        }
+
+        return $callable;
     }
 
     /**

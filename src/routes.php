@@ -7,25 +7,23 @@ use Controller\TodoHtmlController;
 use Http\Response;
 
 /** @var Router $router */
-/** @var TodoHtmlController $todoHtmlController */
-/** @var TodoApiController $todoApiController */
 
 $router->get('/', static fn ($request, $params): Response => Response::redirect('/todos'));
 
 // HTML routes
-$router->get('/todos', [$todoHtmlController, 'index']);
-$router->get('/todos/create', [$todoHtmlController, 'createForm']);
-$router->post('/todos', [$todoHtmlController, 'store']);
-$router->get('/todos/{id}/edit', [$todoHtmlController, 'editForm']);
-$router->put('/todos/{id}', [$todoHtmlController, 'update']);
-$router->patch('/todos/{id}', [$todoHtmlController, 'update']);
-$router->delete('/todos/{id}', [$todoHtmlController, 'destroy']);
-$router->post('/todos/{id}/done', [$todoHtmlController, 'done']);
+$router->get('/todos', [TodoHtmlController::class, 'index']);
+$router->get('/todos/create', [TodoHtmlController::class, 'createForm']);
+$router->post('/todos', [TodoHtmlController::class, 'store']);
+$router->get('/todos/{id}/edit', [TodoHtmlController::class, 'editForm']);
+$router->put('/todos/{id}', [TodoHtmlController::class, 'update']);
+$router->patch('/todos/{id}', [TodoHtmlController::class, 'update']);
+$router->delete('/todos/{id}', [TodoHtmlController::class, 'destroy']);
+$router->post('/todos/{id}/done', [TodoHtmlController::class, 'done']);
 
 // API routes
-$router->get('/api/todos', [$todoApiController, 'index']);
-$router->get('/api/todos/{id}', [$todoApiController, 'show']);
-$router->post('/api/todos', [$todoApiController, 'store']);
-$router->patch('/api/todos/{id}', [$todoApiController, 'update']);
-$router->delete('/api/todos/{id}', [$todoApiController, 'destroy']);
-$router->post('/api/todos/{id}/done', [$todoApiController, 'done']);
+$router->get('/api/todos', [TodoApiController::class, 'index']);
+$router->get('/api/todos/{id}', [TodoApiController::class, 'show']);
+$router->post('/api/todos', [TodoApiController::class, 'store']);
+$router->patch('/api/todos/{id}', [TodoApiController::class, 'update']);
+$router->delete('/api/todos/{id}', [TodoApiController::class, 'destroy']);
+$router->post('/api/todos/{id}/done', [TodoApiController::class, 'done']);

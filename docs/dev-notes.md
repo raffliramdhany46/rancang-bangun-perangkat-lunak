@@ -12,10 +12,22 @@
 
 ## Cara Menambah Route Baru
 1. Tambahkan di `src/routes.php`.
-2. Implementasikan method controller terkait.
-3. Jika ada logic bisnis baru, taruh di service.
-4. Tambahkan test bila behavior berubah.
-5. Perbarui `docs/routing.md` atau `docs/api.md`.
+2. Gunakan format handler `[Controller::class, 'method']` agar auto-instansiasi via container.
+3. Pastikan method controller menerima `Request $request, array $params = []`.
+4. Implementasikan method controller terkait.
+5. Jika ada logic bisnis baru, taruh di service.
+6. Tambahkan test bila behavior berubah.
+7. Perbarui `docs/routing.md` atau `docs/api.md`.
+
+Contoh:
+```php
+$router->get('/todos', [TodoHtmlController::class, 'index']);
+```
+
+## Catatan Parameter Action Controller
+- Router memanggil action dengan urutan argumen `($request, $params)`.
+- Dependency tambahan sebaiknya melalui constructor controller.
+- Jangan menaruh dependency class lain langsung di parameter method action, karena belum ada method injection otomatis.
 
 ## Cara Menambah Service Baru
 1. Buat class service di `src/<Domain>/`.

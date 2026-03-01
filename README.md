@@ -67,6 +67,15 @@ SOURCE database/schema.sql;
 - `DELETE /api/todos/{id}`
 - `POST /api/todos/{id}/done`
 
+## Definisi Route Controller
+Project ini mendukung style handler seperti Laravel:
+
+```php
+$router->get('/todos', [TodoHtmlController::class, 'index']);
+```
+
+Handler tersebut di-resolve oleh container saat route dipanggil, sehingga controller tidak perlu diinstansiasi manual satu per satu di `index.php`.
+
 ## Contoh API (curl)
 ```bash
 curl -H "Accept: application/json" http://localhost:8000/api/todos
