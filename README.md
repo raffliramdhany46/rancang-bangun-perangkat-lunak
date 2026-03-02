@@ -20,3 +20,5 @@ Server memakai PHP built-in server dengan web root di folder `src`.
 - `src/assets/` -> file statis (css/js/image)
 
 Routing mengikuti file PHP langsung (contoh: `/about.php`).
+
+First commit Raffli
