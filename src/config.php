@@ -8,7 +8,7 @@ return [
         'port' => 3306,
         'name' => 'todo_app',
         'user' => 'root',
-        'pass' => 'sedrftg34567',
+        'pass' => '',
         'charset' => 'utf8mb4',
     ],
 ];
