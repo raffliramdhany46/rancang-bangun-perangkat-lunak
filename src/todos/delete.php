@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-require _DIR_ . '/../bootstrap.php';
-require _DIR_ . '/../View/View.php';
+require __DIR__ . '/../bootstrap.php';
+require __DIR__ . '/../View/View.php';
 
 use App\View\View;
 
