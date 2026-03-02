@@ -18,16 +18,109 @@ final class TodoHtmlController
         ]);
     }
 
-    public function store() : void{
+    public function store(): void
+    {
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-        if ($method === 'POST') { 
-            // Simulasi penyimpanan data
+        if ($method === 'POST') {
             $title = $_POST['title'] ?? 'Untitled';
-            // Di sini Anda bisa menambahkan logika untuk menyimpan data ke database atau file
             echo "Todo dengan judul '{$title}' telah disimpan.";
-            // Setelah menyimpan, redirect ke halaman daftar todo
-            // header('Location: /todos');
             exit();
         }
+    }
+
+    public function edit(): void
+    {
+        $db = db();
+
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        if ($id <= 0) {
+            http_response_code(400);
+            echo "Parameter id tidak valid.";
+            exit;
+        }
+
+        $stmt = $db->prepare("
+            SELECT id, title, description, is_done, dead_line, is_need_achieve
+            FROM todos
+            WHERE id = :id
+            LIMIT 1
+        ");
+        $stmt->execute(['id' => $id]);
+
+        $todo = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$todo) {
+            http_response_code(404);
+            echo "Todo tidak ditemukan.";
+            exit;
+        }
+
+        View::render('edit', [
+            'title' => 'Edit Todo',
+            'pageHeading' => 'Edit Todo',
+            'todo' => $todo,
+        ]);
+    }
+
+    public function update(): void
+    {
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        if ($method !== 'POST') {
+            http_response_code(405);
+            echo "Method not allowed.";
+            exit;
+        }
+
+        $db = db();
+
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        if ($id <= 0) {
+            http_response_code(400);
+            echo "Parameter id tidak valid.";
+            exit;
+        }
+
+        $title = trim((string)($_POST['title'] ?? ''));
+        $description = trim((string)($_POST['description'] ?? ''));
+
+        // checkbox: kalau tidak dicentang -> tidak muncul di POST
+        $isDone = isset($_POST['is_done']) ? 1 : 0;
+        $isNeedAchieve = isset($_POST['is_need_achieve']) ? 1 : 0;
+
+        // datetime-local biasanya "YYYY-mm-ddTHH:ii"
+        $deadLineRaw = trim((string)($_POST['dead_line'] ?? ''));
+        $deadLine = null;
+        if ($deadLineRaw !== '') {
+            // ubah jadi format MySQL "YYYY-mm-dd HH:ii:ss"
+            $deadLine = str_replace('T', ' ', $deadLineRaw) . ':00';
+        }
+
+        if ($title === '' || $description === '') {
+            http_response_code(422);
+            echo "Title dan Description wajib diisi.";
+            exit;
+        }
+
+        $stmt = $db->prepare("
+            UPDATE todos
+            SET title = :title,
+                description = :description,
+                is_done = :is_done,
+                is_need_achieve = :is_need_achieve,
+                dead_line = :dead_line
+            WHERE id = :id
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'title' => $title,
+            'description' => $description,
+            'is_done' => $isDone,
+            'is_need_achieve' => $isNeedAchieve,
+            'dead_line' => $deadLine, // null boleh
+            'id' => $id,
+        ]);
+
+        header('Location: /index.php');
+        exit;
     }
 }

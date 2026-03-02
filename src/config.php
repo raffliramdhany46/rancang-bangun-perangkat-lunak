@@ -6,9 +6,9 @@ return [
     'db' => [
         'host' => '127.0.0.1',
         'port' => 3306,
-        'name' => 'todo_app',
+        'name' => 'edit-rbpl',
         'user' => 'root',
-        'pass' => 'sedrftg34567',
+        'pass' => '',
         'charset' => 'utf8mb4',
     ],
 ];
