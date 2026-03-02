@@ -19,6 +19,7 @@ $title = $title ?? 'PHP Native App';
         <nav>
             <a href="/index.php">Home</a>
             <a href="/about.php">About</a>
+            <a href="/lists.php">All Lists</a>
             <a href="/todos/create.php">Create Todo</a>
         </nav>
     </div>
