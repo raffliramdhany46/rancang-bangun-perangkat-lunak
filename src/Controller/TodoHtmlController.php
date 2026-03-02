@@ -10,6 +10,13 @@ use App\View\View;
 
 final class TodoHtmlController
 {
+    private function jsonResponse(array $payload, int $statusCode = 200): void
+    {
+        http_response_code($statusCode);
+        header('Content-Type: application/json; charset=UTF-8');
+        echo json_encode($payload);
+    }
+
     public function create(): void
     {
         View::render('todos/create', [
@@ -120,7 +127,71 @@ final class TodoHtmlController
             'id' => $id,
         ]);
 
-        header('Location: /index.php');
+        header('Location: /dashboard.php');
         exit;
+    }
+
+    public function markDone(): void
+    {
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        if ($method !== 'POST') {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Method not allowed.',
+            ], 405);
+            return;
+        }
+
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id <= 0) {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Parameter id tidak valid.',
+            ], 422);
+            return;
+        }
+
+        try {
+            $db = db();
+
+            $stmtTodo = $db->prepare("
+                SELECT id, is_done
+                FROM todos
+                WHERE id = :id
+                LIMIT 1
+            ");
+            $stmtTodo->execute(['id' => $id]);
+            $todo = $stmtTodo->fetch(\PDO::FETCH_ASSOC);
+
+            if (!$todo) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Todo tidak ditemukan.',
+                ], 404);
+                return;
+            }
+
+            if ((int)$todo['is_done'] !== 1) {
+                $stmtUpdate = $db->prepare("
+                    UPDATE todos
+                    SET is_done = 1
+                    WHERE id = :id
+                    LIMIT 1
+                ");
+                $stmtUpdate->execute(['id' => $id]);
+            }
+
+            $this->jsonResponse([
+                'success' => true,
+                'message' => 'Todo berhasil ditandai selesai.',
+                'id' => $id,
+                'is_done' => 1,
+            ]);
+        } catch (\Throwable $e) {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Gagal update todo.',
+            ], 500);
+        }
     }
 }

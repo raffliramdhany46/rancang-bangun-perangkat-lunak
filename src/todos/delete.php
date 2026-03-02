@@ -11,6 +11,12 @@ $db = db();
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+$redirect = $_GET['redirect'] ?? 'dashboard';
+
+$redirectTo = '/dashboard.php';
+if ($redirect === 'lists') {
+    $redirectTo = '/lists.php';
+}
 
 if ($id <= 0) {
     http_response_code(400);
@@ -22,7 +28,7 @@ if ($method === 'POST') {
     $stmt = $db->prepare("DELETE FROM todos WHERE id = :id LIMIT 1");
     $stmt->execute(['id' => $id]);
 
-    header('Location: /dashboard.php');
+    header('Location: ' . $redirectTo);
     exit;
 }
 

@@ -17,7 +17,7 @@ if (!$todo) {
     </div>
 
     <form method="POST" style="display:flex; gap:10px;">
-        <button type="submit" class="btn" style="background:#dc3545; color:#fff; border:none; padding:8px 12px; border-radius:6px;">Hapus</button>
+        <button type="submit" class="btn btn-danger">Hapus</button>
         <a href="/dashboard.php" class="btn" style="text-decoration:none; padding:8px 12px; border-radius:6px;">Batal</a>
     </form>
 </section>

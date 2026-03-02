@@ -61,7 +61,10 @@ function isOverdue(?string $ts): bool {
         </div>
     </div>
 
-    <h3 style="margin:18px 0 10px;">5 Task Teratas yang Mau Deadline</h3>
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:18px 0 10px;">
+        <h3 style="margin:0;">5 Task Teratas yang Mau Deadline</h3>
+        <a class="btn" href="/lists.php" style="text-decoration:none;">Lihat List Lengkap</a>
+    </div>
 
     <?php if (empty($upcomingTodos)): ?>
         <div class="card" style="padding:14px; opacity:.85;">

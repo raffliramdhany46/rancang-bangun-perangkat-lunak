@@ -43,12 +43,12 @@ $old = $old ?? [];
 
         <!-- Need Achieve -->
         <div>
-            <label>
+            <label class="checkbox-pretty">
                 <input type="checkbox"
                        name="is_need_achieve"
                        value="1"
                        <?= !empty($old['is_need_achieve']) ? 'checked' : '' ?>>
-                Perlu Diselesaikan (Need Achieve)
+                <span>Perlu Diselesaikan</span>
             </label>
         </div>
 

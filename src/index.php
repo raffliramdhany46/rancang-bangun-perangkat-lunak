@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/bootstrap.php';
-require __DIR__ . '/View/View.php';
-
-use App\View\View;
-
-View::render('home', [
-    'title' => 'Home',
-    'pageHeading' => 'Aplikasi Todo Sederhana',
-]);
+header('Location: /dashboard.php');
+exit;
 

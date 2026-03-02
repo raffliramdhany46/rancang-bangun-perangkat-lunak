@@ -17,11 +17,10 @@ $title = $title ?? 'PHP Native App';
     <div class="container">
         <h1 class="brand">Rancang Bangun Perangkat Lunak Management versi (version control)</h1>
         <nav>
-            <a href="/index.php">Home</a>
+            <a href="/dashboard.php">Dashboard</a>
             <a href="/about.php">About</a>
             <a href="/lists.php">All Lists</a>
             <a href="/todos/create.php">Create Todo</a>
-            <a href="/dashboard.php">Dashboard</a>
         </nav>
     </div>
 </header>

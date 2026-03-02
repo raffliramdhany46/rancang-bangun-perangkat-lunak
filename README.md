@@ -13,7 +13,8 @@ Server memakai PHP built-in server dengan web root di folder `src`.
 
 ## Struktur sederhana (tanpa router custom)
 
-- `src/index.php` -> halaman home
+- `src/index.php` -> redirect awal ke dashboard
+- `src/dashboard.php` -> halaman dashboard
 - `src/about.php` -> halaman about
 - `src/todos/create.php` -> halaman form create todo
 - `src/Views/layout.php` -> layout utama

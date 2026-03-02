@@ -128,7 +128,7 @@ function toLocalDatetime(?string $ts): string {
 </div>
             <div style="display:flex; gap:10px; margin-top:6px;">
                 <button type="submit" class="btn">Save Changes</button>
-                <a class="btn" href="/index.php" style="text-decoration:none;">Cancel</a>
+                <a class="btn" href="/dashboard.php" style="text-decoration:none;">Cancel</a>
             </div>
 
         </div>
